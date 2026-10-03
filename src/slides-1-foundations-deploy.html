@@ -1,0 +1,202 @@
+<!-- ============================================================ 1 TITLE -->
+<section class="slide s-title active" id="title" data-title="Title" data-topic="Intro">
+  <div class="bgimg" role="img" aria-label="A data centre aisle rendered in Blender, racks lit in teal and amber with glowing overhead cabling"></div>
+  <div class="titlemark">netbox</div>
+  <div class="eyebrow">Community NetBox<span class="sep">&middot;</span>A hands-on tour<span class="sep">&middot;</span>3 October 2026</div>
+  <h1>Using NetBox, <span class="accent">from first container to real automation.</span></h1>
+  <p class="lede" style="margin-top:28px;max-width:62ch">What community NetBox models, how you run it with netbox-docker, and the use cases where it earns its keep. <b>Pinned to NetBox {{NB}}</b>, so every command here matches what you will actually run.</p>
+  <div class="vchips">
+    <span class="st ok">NetBox v{{NB}}</span>
+    <span class="st nat">netbox-docker {{ND}}</span>
+    <span class="st pl">image {{TAG}}</span>
+  </div>
+  <p class="note" style="margin-top:26px">Jump to any slide with <b>G</b> or the button top right. Deep links work too: add <code>#model</code> or <code>#12</code> to the URL.</p>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 2 AGENDA -->
+<section class="slide" id="agenda" data-title="Agenda">
+  <div class="eyebrow">Intro<span class="sep">&middot;</span>Where we are going</div>
+  <h1>Six chapters, <span class="accent">pick any one to jump in.</span></h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card go" data-goto="foundations" data-in="1"><span class="nbr">01 &middot; Foundations</span><h3>What NetBox is</h3><p>Source of truth, the version story, what is new in 4.7 and the shape of the data model.</p></div>
+      <div class="card go" data-goto="deploy" data-in="1"><span class="nbr">02 &middot; Deploy</span><h3>Running it with netbox-docker</h3><p>Five containers, a four-command quick start, hardening and upgrade traps.</p></div>
+      <div class="card go" data-goto="model" data-in="2"><span class="nbr">03 &middot; Model</span><h3>Describing your estate</h3><p>DCIM, power and cooling, IPAM, virtualisation and circuits.</p></div>
+      <div class="card go" data-goto="operate" data-in="2"><span class="nbr">04 &middot; Operate</span><h3>Customise and automate</h3><p>Custom fields, REST and GraphQL, event rules and custom scripts.</p></div>
+      <div class="card go" data-goto="integrate" data-in="3"><span class="nbr">05 &middot; Integrate</span><h3>Plugging it into everything</h3><p>Ansible, Terraform, pynetbox and the plugin ecosystem.</p></div>
+      <div class="card go" data-goto="govern" data-in="3"><span class="nbr">06 &middot; Govern and use cases</span><h3>Trust it, then use it</h3><p>Change logging, permissions, SSO, day-2 operations and eight worked use cases.</p></div>
+    </div>
+    <div class="card" data-in="4" style="flex-direction:row;align-items:center;gap:28px">
+      <span class="label">Keys</span>
+      <div class="keys"><span><kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>space</kbd> step through</span><span><kbd>G</kbd> or <kbd>/</kbd> jump and search</span><span><kbd>A</kbd> reveal everything on a slide</span><span><kbd>F</kbd> fullscreen</span><span><kbd>Home</kbd> <kbd>End</kbd></span></div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 3 WHY NETBOX -->
+<section class="slide" id="foundations" data-title="Why NetBox" data-topic="Foundations">
+  <div class="eyebrow">Foundations<span class="sep">&middot;</span>The idea</div>
+  <h1>NetBox records what your infrastructure <span class="accent">should be.</span> Everything else checks it.</h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card hl" data-in="1"><h3>Intended state, not observed state</h3><p>Monitoring and discovery tell you what is happening. NetBox holds what you decided: the rack a server belongs in, the prefix a site was given, the circuit that feeds it.</p></div>
+      <div class="card" data-in="2"><h3>An opinionated model</h3><p>Sites, racks, devices, cables, prefixes, VLANs, circuits and virtual machines already exist, with the relationships between them. You start modelling on day one instead of designing tables.</p></div>
+      <div class="card" data-in="3"><h3>API first</h3><p>Anything you can click in the UI is available over REST and GraphQL. That is what lets automation read NetBox instead of a spreadsheet.</p></div>
+    </div>
+    <div class="card warn" data-in="4"><h3>What community NetBox does not do</h3><p>It does not poll devices, discover your network or push configuration to hardware. Those jobs belong to other tools that use NetBox as their input, which is exactly the pattern the later chapters show.</p><div class="where">source: <a class="lk" target="_blank" href="{{D}}">NetBox documentation</a></div></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 4 VERSIONS -->
+<section class="slide" data-title="Two version numbers">
+  <div class="eyebrow">Foundations<span class="sep">&middot;</span>Versioning</div>
+  <h1>Two version numbers, <span class="accent">one image tag.</span></h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card"><span class="label">NetBox core</span><div class="big">v<span class="accent">{{NB}}</span></div><p>Released 29 September 2026. The latest release in the 4.7 series.</p><div class="links"><a class="nb" target="_blank" href="https://github.com/netbox-community/netbox/releases/tag/v{{NB}}">release v{{NB}}</a></div></div>
+      <div class="card"><span class="label">netbox-docker</span><div class="big"><span class="accent">{{ND}}</span></div><p>The container packaging. It has its own version and only supports NetBox 4.7.x and above.</p><div class="links"><a class="nb" target="_blank" href="https://github.com/netbox-community/netbox-docker/releases/tag/{{ND}}">release {{ND}}</a></div></div>
+      <div class="card hl"><span class="label">Image tag to use</span><div class="big" style="font-size:25px"><span class="accent">v{{NB}}-{{ND}}</span></div><p>NetBox version, a dash, then the netbox-docker version it was built with.</p><div class="links"><a class="nb" target="_blank" href="https://hub.docker.com/r/netboxcommunity/netbox/tags">docker hub tags</a></div></div>
+    </div>
+    <div class="tbl tight" data-in="1">
+      <div class="tr h c3" style="grid-template-columns:320px 1fr 260px"><div>Tag form</div><div>What it means</div><div>Use it for</div></div>
+      <div class="tr c3" style="grid-template-columns:320px 1fr 260px"><div class="n"><code>vX.Y.Z-a.b.c</code></div><div>A specific NetBox release with a specific netbox-docker version</div><div><span class="st ok">Production</span></div></div>
+      <div class="tr c3" style="grid-template-columns:320px 1fr 260px"><div class="n"><code>vX.Y-a.b.c</code></div><div>The newest patch of one NetBox minor, same netbox-docker version</div><div><span class="st part">Acceptable</span></div></div>
+      <div class="tr c3" style="grid-template-columns:320px 1fr 260px"><div class="n"><code>latest-a.b.c</code></div><div>Whatever the newest stable NetBox is, which can change under you</div><div><span class="st no">Not for production</span></div></div>
+    </div>
+    <p class="note" data-in="2"><b>Watch out:</b> the <code>docker-compose.yml</code> in netbox-docker {{ND}} defaults to the floating <code>v4.7-{{ND}}</code>. Set <code>VERSION</code> yourself to pin it to <code>{{TAG}}</code>, and keep the checked-out netbox-docker version in step with the image. The README is explicit that they must match.</p>
+    <div class="where">source: <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker#container-image-tags">netbox-docker README, Container Image Tags</a> &middot; image tag published 2 October 2026 on Docker Hub</div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 5 WHAT'S NEW -->
+<section class="slide" data-title="What is new in 4.7">
+  <div class="eyebrow">Foundations<span class="sep">&middot;</span>NetBox 4.7</div>
+  <h1>NetBox 4.7 adds cooling, breakout ports and <span class="accent">a faster, safer API.</span></h1>
+  <div class="body">
+    <div class="g4 eq">
+      <div class="card hl" data-in="1"><h3><small>Model</small>Cooling infrastructure</h3><p>Cooling sources and coolant feeds that mirror power panels and feeds, plus intakes and outflows on devices for CDUs and manifolds.</p></div>
+      <div class="card" data-in="1"><h3><small>Model</small>Channelised interfaces</h3><p>Breakout ports modelled natively. One cable to the parent, a traced path per channel.</p></div>
+      <div class="card" data-in="2"><h3><small>Model</small>Multi-protocol services</h3><p>One service can expose <code>tcp/53</code> and <code>udp/53</code> through a unified <code>port_mappings</code> field.</p></div>
+      <div class="card" data-in="2"><h3><small>Model</small>Module bay types</h3><p>Say which modules a bay accepts, and move an installed module to another bay, even on another device.</p></div>
+      <div class="card" data-in="3"><h3><small>API</small>Background bulk writes</h3><p>Add <code>?background=true</code> to a bulk request. You get a 202 and a job to inspect, so big batches stop timing out at the proxy.</p></div>
+      <div class="card" data-in="3"><h3><small>API</small>Per-object bulk errors</h3><p>A failed bulk call now names the index of each bad object with its field errors, so you can resubmit only those.</p></div>
+      <div class="card" data-in="4"><h3><small>Automation</small>Cached config context</h3><p>Merged config context is pre-rendered per device and VM, then invalidated automatically when inputs change.</p></div>
+      <div class="card" data-in="4"><h3><small>Automation</small>Smarter event rules</h3><p>Conditions can compare pre-change and post-change snapshots with new <code>changed</code> and <code>unchanged</code> operators.</p></div>
+    </div>
+    <div class="where">source: <a class="lk" target="_blank" href="{{D}}release-notes/version-4.7">NetBox v4.7 release notes</a></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 6 DATA MODEL -->
+<section class="slide" data-title="The data model">
+  <div class="eyebrow">Foundations<span class="sep">&middot;</span>The shape of it</div>
+  <h1>A few core objects, <span class="accent">nested the way your estate is.</span></h1>
+  <div class="body">
+    <div class="split">
+      <div class="col">
+        <div class="card" data-in="1"><div class="tree"><span class="p">Region</span> / <span class="p">Site group</span>                 <span class="m">where in the world</span>
+<span class="m">└─</span> <span class="p">Site</span>                             <span class="m">a building or campus</span>
+   <span class="m">└─</span> <span class="p">Location</span>                      <span class="m">a room or cage, nestable</span>
+      <span class="m">└─</span> <span class="p">Rack</span>                       <span class="m">with numbered units</span>
+         <span class="m">└─</span> <span class="p">Device</span>                  <span class="m">has a role, type and status</span>
+            <span class="m">├─</span> <span class="z">Interface</span> <span class="m">──</span> <span class="rv">Cable</span> <span class="m">──</span> <span class="z">Interface</span>
+            <span class="m">└─</span> <span class="z">IP address</span>, <span class="z">VLAN</span>, <span class="z">power port</span></div></div>
+        <p class="note" data-in="2">Cutting across all of it: <b>tenants</b> say who owns something, <b>tags</b> label anything, and <b>custom fields</b> add the attributes only you care about.</p>
+        <p class="note" data-in="3">From 4.7 the nested group models (regions, locations, device roles and more) are stored with PostgreSQL <code>ltree</code> rather than django-mptt. Plugin authors need to know. Everyone else just gets faster tree queries.</p>
+        <div class="where">source: <a class="lk" target="_blank" href="{{D}}features/">NetBox features overview</a></div>
+      </div>
+      <figure class="shot" style="background-image:url(assets/renders/datamodel.webp)" role="img" aria-label="Five glowing tiers stacked like a pyramid, from region at the bottom to device at the top"><figcaption>Region, site, location, rack, device. Each tier narrows to the thing you rack.</figcaption></figure>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 7 ARCHITECTURE -->
+<section class="slide" id="deploy" data-title="Five containers" data-topic="Deploy">
+  <div class="eyebrow">Deploy<span class="sep">&middot;</span>What netbox-docker runs</div>
+  <h1>Five containers, <span class="accent">one compose file.</span></h1>
+  <div class="body">
+    <div class="dia" style="height:470px" data-edges="user>nb|HTTP 8080;nb>pg|SQL;nb>rd;nb>rc;wk>pg;wk>rd">
+      <div class="nd ext" data-id="user" style="left:60px;top:180px;width:270px"><span class="k">Client</span><b>Browser or API client</b><small>Via your reverse proxy</small></div>
+      <div class="nd hero" data-id="nb" style="left:560px;top:50px;width:400px"><span class="k">Service: netbox</span><b>NetBox web and API</b><small>UI, REST, GraphQL</small><span class="v">netboxcommunity/netbox:{{TAG}}</span></div>
+      <div class="nd" data-id="wk" style="left:560px;top:310px;width:400px"><span class="k">Service: netbox-worker</span><b>Background worker</b><small>Webhooks, scripts, jobs</small><span class="v">same image, runs rqworker</span></div>
+      <div class="nd" data-id="pg" style="left:1220px;top:30px;width:440px"><span class="k">Service: postgres</span><b>PostgreSQL 18</b><small>The system of record</small><span class="v">postgres:18-alpine</span></div>
+      <div class="nd" data-id="rd" style="left:1220px;top:185px;width:440px"><span class="k">Service: redis</span><b>Valkey 9.1, persistent</b><small>Task queue for background jobs</small><span class="v">appendonly yes</span></div>
+      <div class="nd" data-id="rc" style="left:1220px;top:340px;width:440px"><span class="k">Service: redis-cache</span><b>Valkey 9.1, ephemeral</b><small>Cache only, nothing to back up</small><span class="v">no persistence</span></div>
+    </div>
+    <p class="note">The worker is the same image as the web container, started with a different command. If webhooks, event rules or custom scripts do nothing, check the worker first.</p>
+    <div class="where">source: <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker/blob/{{ND}}/docker-compose.yml">docker-compose.yml at tag {{ND}}</a></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 8 QUICK START -->
+<section class="slide" data-title="Quick start">
+  <div class="eyebrow">Deploy<span class="sep">&middot;</span>Quick start</div>
+  <h1>Up and running in a few commands, <span class="accent">pinned to {{TAG}}.</span></h1>
+  <div class="body">
+    <div class="split">
+      <div class="col">
+        <div class="code"><div class="bar"><span>terminal</span><b>netbox-docker {{ND}}</b></div><pre><span class="c"># 1. Get the netbox-docker files at the version that matches the image</span>
+git clone -b <span class="m">{{ND}}</span> https://github.com/netbox-community/netbox-docker.git
+cd netbox-docker
+
+<span class="c"># 2. Pin the image and publish the web port</span>
+echo "VERSION=<span class="m">{{TAG}}</span>" &gt; .env
+cp docker-compose.override.yml.example docker-compose.override.yml
+
+<span class="c"># 3. Pull and start</span>
+docker compose pull
+docker compose up -d
+
+<span class="c"># 4. Create the first admin once it is healthy</span>
+docker compose exec netbox /opt/netbox/netbox/manage.py createsuperuser</pre></div>
+        <p class="note">Give it a few minutes on first start while the database migrates. Then open <code>http://localhost:8000/</code>. The override example maps host port 8000 to the container's 8080.</p>
+        <p class="note">Restarting from an empty database a lot? Set the <code>SUPERUSER_*</code> variables in the override file instead of running <code>createsuperuser</code> by hand.</p>
+      </div>
+      <figure class="shot" style="background-image:url(assets/renders/containers.webp)" role="img" aria-label="A glowing plinth carrying a large central block with a database cylinder, a cache cube and a worker block linked to it"><figcaption>NetBox in the middle, its database, cache and worker around it.</figcaption></figure>
+    </div>
+    <div class="where">source: <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker#quickstart">netbox-docker README, Quickstart</a> &middot; <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker/wiki/Getting-Started">Getting Started wiki</a></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 9 HARDENING -->
+<section class="slide" data-title="Configure and harden">
+  <div class="eyebrow">Deploy<span class="sep">&middot;</span>Before anyone else logs in</div>
+  <h1>The defaults get you running. <span class="accent">They are not a production setup.</span></h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card" data-in="1"><h3>Where configuration lives</h3><ul class="t"><li><code>env/netbox.env</code>, <code>postgres.env</code>, <code>redis.env</code> for settings</li><li><code>configuration/</code> mounted read-only at <code>/etc/netbox/config</code></li><li><code>plugins.py</code>, <code>ldap/</code> and <code>extra.py</code> live in that folder</li></ul></div>
+      <div class="card" data-in="2"><h3>What persists</h3><ul class="t"><li><code>netbox-postgres</code> the database</li><li><code>netbox-redis-data</code> the task queue</li><li><code>netbox-media-files</code> uploads</li><li><code>netbox-scripts-files</code> and <code>netbox-reports-files</code> your custom code</li></ul></div>
+      <div class="card warn" data-in="3"><h3>Change before go-live</h3><ul class="t"><li>The example database and Redis passwords in <code>env/</code></li><li>The shipped <code>API_TOKEN_PEPPER_1</code>, a public example value</li><li><code>CORS_ORIGIN_ALLOW_ALL=True</code>, which is set by default</li><li>Mail settings, which point at <code>localhost</code></li></ul></div>
+    </div>
+    <div class="g2 eq" data-in="4">
+      <div class="card hl"><h3>Put TLS in front</h3><p>The container speaks plain HTTP on 8080. Terminate TLS on a reverse proxy or load balancer, and publish only that.</p></div>
+      <div class="card hl"><h3>Add single sign-on early</h3><p>The override example ships Okta and Google environment variables, and the config folder has an LDAP slot. Adding SSO after people have local accounts is harder than starting with it.</p></div>
+    </div>
+    <div class="where">source: netbox-docker {{ND}} <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker/tree/{{ND}}/env">env/</a> and <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker/blob/{{ND}}/docker-compose.override.yml.example">docker-compose.override.yml.example</a></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 10 REQUIREMENTS AND UPGRADES -->
+<section class="slide" data-title="Requirements and upgrades">
+  <div class="eyebrow">Deploy<span class="sep">&middot;</span>Read this before upgrading</div>
+  <h1>4.7 raised the floor, and 4.7.2 <span class="accent">closes a token exposure.</span></h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card hl" data-in="1"><h3>Hard requirements</h3><ul class="t"><li><b>PostgreSQL 15 or later.</b> 14 is dropped and the upgrade aborts on it</li><li>The <b><code>ltree</code></b> extension. NetBox installs it if the database user has <code>CREATE</code> on the database</li><li><b>Redis 6.0 or later.</b> 5.x is dropped. netbox-docker uses Valkey</li></ul></div>
+      <div class="card warn" data-in="2"><h3>Plan a maintenance window</h3><p>The move from django-mptt to <code>ltree</code> locks tables and backfills them, and the upgrade then rebuilds the config context cache with one update per device and VM. On a large estate that can take minutes, and it is not practically reversible.</p></div>
+      <div class="card bad" data-in="3"><h3>Security: replace exposed tokens</h3><p>In 4.7.0 and 4.7.1, API tokens created through background bulk requests were recorded in plaintext in job results, readable by anyone who can view jobs. 4.7.2 rejects such requests. Treat any token made that way as exposed and replace it.</p></div>
+    </div>
+    <div class="card warn" data-in="4"><h3>If you restored a database from a v4.7.0 dump</h3><p>The triggers that cascade hierarchical paths were not recreated by that restore, so renaming or moving a region, location, tenant group or similar did not update its descendants. Upgrading reinstalls the triggers but does not repair values already stale. The documentation has a procedure to detect and correct them.</p><div class="links"><a class="nb" target="_blank" href="{{D}}administration/repairing-hierarchical-paths">repairing hierarchical paths</a></div></div>
+    <div class="where">source: <a class="lk" target="_blank" href="{{D}}release-notes/version-4.7">v4.7 release notes</a> (v4.7.0, v4.7.1 and v4.7.2 warnings) &middot; upgrade with netbox-docker by bumping <code>VERSION</code> and the checked-out tag together</div>
+  </div>
+  {{FOOTER}}
+</section>

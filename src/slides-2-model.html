@@ -1,0 +1,147 @@
+<!-- ============================================================ 11 DCIM -->
+<section class="slide" id="model" data-title="DCIM: the physical estate" data-topic="Model">
+  <div class="eyebrow">Model<span class="sep">&middot;</span>DCIM</div>
+  <h1>Describe the physical estate once, <span class="accent">down to the cable.</span></h1>
+  <div class="body">
+    <div class="tbl tight">
+      <div class="tr h c3"><div>Object</div><div>What it holds</div><div>Reference</div></div>
+      <div class="tr c3"><div class="n">Site</div><div>A building or campus, with status, address, time zone and physical location</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/dcim/site">models/dcim/site</a></div></div>
+      <div class="tr c3"><div class="n">Location</div><div>Rooms, floors and cages inside a site. They nest, so a cage can sit inside a room</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/dcim/location">models/dcim/location</a></div></div>
+      <div class="tr c3"><div class="n">Rack</div><div>Numbered units, reservations, and rack types so one definition covers many racks</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/dcim/rack">models/dcim/rack</a></div></div>
+      <div class="tr c3"><div class="n">Device</div><div>Created from a device type, with a role, platform, status, rack position and primary IP</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/dcim/device">models/dcim/device</a></div></div>
+      <div class="tr c3"><div class="n">Interface and ports</div><div>Network, console and power ports, each cabled to another device's port</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/dcim/interface">models/dcim/interface</a></div></div>
+      <div class="tr c3"><div class="n">Cable</div><div>Joins two terminations. NetBox traces the whole path end to end, through patch panels and circuits</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/dcim/cable">models/dcim/cable</a></div></div>
+    </div>
+    <div class="g2 eq">
+      <div class="card" data-in="1"><h3>Why it pays off</h3><p>"What is plugged into that switch port?" and "which rack has six free units and spare power?" stop being questions you answer by walking the floor.</p></div>
+      <div class="card" data-in="2"><h3>Bulk loading</h3><p>Every list view has CSV and YAML import. 4.7 also supports bulk import of cables with several terminations on each side.</p></div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 12 DEVICE TYPES -->
+<section class="slide" data-title="Device types and modules">
+  <div class="eyebrow">Model<span class="sep">&middot;</span>Hardware templates</div>
+  <h1>Define a model of hardware once. <span class="accent">Every device inherits its ports.</span></h1>
+  <div class="body">
+    <div class="g2 eq">
+      <div class="card hl" data-in="1"><h3>Device types are templates</h3><p>A device type lists the interfaces, console ports, power ports and bays a model has. Create a device of that type and all its components appear, named and numbered. Edit the template and new devices pick up the change.</p><div class="links"><a class="nb" target="_blank" href="{{D}}models/dcim/devicetype">models/dcim/devicetype</a><a class="nb" target="_blank" href="https://github.com/netbox-community/devicetype-library">devicetype-library</a></div></div>
+      <div class="card" data-in="2"><h3>Modules for modular kit</h3><p>Chassis with line cards, transceivers or expansion cards use module bays and module types. Installing a module can create its interfaces with the right names.</p><div class="links"><a class="nb" target="_blank" href="{{D}}models/dcim/moduletype">models/dcim/moduletype</a></div></div>
+      <div class="card" data-in="3"><h3>New in 4.7: bay types and moves</h3><p>Module bay types declare what fits where, for example an SFP28 cage or a PCIe x16 slot, and NetBox validates that a module suits its bay. An installed module, with its whole subtree, can now be moved to another bay instead of being deleted and recreated.</p></div>
+      <div class="card" data-in="4"><h3>New in 4.7: lifecycle date</h3><p>Device types and module types gain an <code>end_of_life</code> date. Filter on it and you have a hardware refresh list without a separate spreadsheet.</p></div>
+    </div>
+    <div class="where">source: <a class="lk" target="_blank" href="{{D}}release-notes/version-4.7">v4.7 release notes</a> &middot; the community library holds ready-made device type definitions you can import</div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 13 POWER AND COOLING -->
+<section class="slide" data-title="Power and cooling">
+  <div class="eyebrow">Model<span class="sep">&middot;</span>Power and, new in 4.7, cooling</div>
+  <h1>Power was always modelled end to end. <span class="accent">Cooling now mirrors it.</span></h1>
+  <div class="body">
+    <div class="g2 eq">
+      <div class="card" data-in="1"><h3>Power chain</h3>
+        <div class="flow" style="margin-top:6px">
+          <div class="fs"><span class="n">Source</span><b>Power panel</b><small>Site or location</small></div>
+          <div class="fs"><span class="n">Circuit</span><b>Power feed</b><small>To a rack</small></div>
+          <div class="fs"><span class="n">Device</span><b>Power port</b><small>Draw and capacity</small></div>
+        </div>
+        <p class="note" style="margin-top:12px">Panels, feeds, power ports and outlets let you check a rack's budget before you rack the next server.</p></div>
+      <div class="card hl" data-in="2"><h3>Cooling chain, new in 4.7</h3>
+        <div class="flow" style="margin-top:6px">
+          <div class="fs"><span class="n">Source</span><b>Cooling source</b><small>Chiller, tower, dry cooler</small></div>
+          <div class="fs"><span class="n">Loop</span><b>Cooling feed</b><small>Coolant to a rack</small></div>
+          <div class="fs"><span class="n">Device</span><b>Intake</b><small>Cold plate or CDU inlet</small></div>
+        </div>
+        <p class="note" style="margin-top:12px">Coolant distribution units and manifolds are ordinary devices that carry cooling intakes and outflows.</p></div>
+    </div>
+    <div class="card" data-in="3"><h3>Prefer to keep it light?</h3><p>You do not have to model the plumbing. A <code>cooling_method</code> of air, liquid, hybrid or immersion is available on devices and device types, and racks can record <code>cooling_capability</code> and <code>cooling_capacity</code>. That is enough to plan liquid-cooled capacity without drawing every pipe.</p></div>
+    <div class="where">source: <a class="lk" target="_blank" href="{{D}}release-notes/version-4.7">v4.7 release notes, Cooling Infrastructure Modeling</a></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 14 IPAM -->
+<section class="slide" data-title="IPAM">
+  <div class="eyebrow">Model<span class="sep">&middot;</span>IP address management</div>
+  <h1>One place for every prefix, address and VLAN, <span class="accent">tied to the kit that uses them.</span></h1>
+  <div class="body">
+    <div class="tbl tight">
+      <div class="tr h c3"><div>Object</div><div>What it is for</div><div>Reference</div></div>
+      <div class="tr c3"><div class="n">Aggregate and RIR</div><div>The top-level blocks you own or are allocated, by registry</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/ipam/aggregate">models/ipam/aggregate</a></div></div>
+      <div class="tr c3"><div class="n">Prefix</div><div>A network with a status of container, active, reserved or deprecated. Utilisation is calculated for you</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/ipam/prefix">models/ipam/prefix</a></div></div>
+      <div class="tr c3"><div class="n">IP address and range</div><div>Individual addresses assigned to interfaces, plus ranges for DHCP pools</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/ipam/ipaddress">models/ipam/ipaddress</a></div></div>
+      <div class="tr c3"><div class="n">VRF</div><div>Separate routing tables, so overlapping private space does not collide</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/ipam/vrf">models/ipam/vrf</a></div></div>
+      <div class="tr c3"><div class="n">VLAN and VLAN group</div><div>Layer 2 segments, grouped by site or by scope, and linked to prefixes</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/ipam/vlan">models/ipam/vlan</a></div></div>
+      <div class="tr c3"><div class="n">ASN</div><div>Autonomous system numbers, assignable to sites</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/ipam/asn">models/ipam/asn</a></div></div>
+      <div class="tr c3"><div class="n">Service</div><div>An application on a device or VM. 4.7 allows several protocols on one service, for example DNS on tcp/53 and udp/53</div><div class="links"><a class="nb" target="_blank" href="{{D}}models/ipam/service">models/ipam/service</a></div></div>
+    </div>
+    <p class="note" data-in="1">In 4.7 the old <code>protocol</code> and <code>ports</code> fields on services became a single <code>port_mappings</code> field. The REST API still accepts the legacy pair on write, but ORM code that passed them directly now fails, so check your scripts and plugins.</p>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 15 ADDRESS PLAN -->
+<section class="slide" data-title="An address plan">
+  <div class="eyebrow">Model<span class="sep">&middot;</span>IPAM in practice</div>
+  <h1>Read an address plan at a glance, <span class="accent">and ask for the next free block.</span></h1>
+  <div class="body">
+    <div class="split">
+      <div class="col">
+        <div class="card" data-in="1"><div class="tree"><span class="p">10.0.0.0/8</span>                       <span class="m">aggregate, RFC 1918</span>
+<span class="m">├─ </span><span class="p">10.10.0.0/16</span>       <span class="z">container</span>  <span class="m">London</span>
+<span class="m">│  ├─ </span><span class="p">10.10.1.0/24</span>    <span class="z">active</span>     <span class="m">servers, VLAN 110</span>
+<span class="m">│  ├─ </span><span class="p">10.10.2.0/24</span>    <span class="z">active</span>     <span class="m">users, VLAN 120</span>
+<span class="m">│  └─ </span><span class="p">10.10.9.0/24</span>    <span class="rv">reserved</span>   <span class="m">future DMZ</span>
+<span class="m">└─ </span><span class="p">10.20.0.0/16</span>       <span class="z">container</span>  <span class="m">Frankfurt</span></div></div>
+        <div class="g2 eq" data-in="2">
+          <div class="card"><h3>Utilisation for free</h3><p>Every prefix shows how much of it is used, rolled up through its children.</p></div>
+          <div class="card"><h3>Allocate, do not guess</h3><p>Ask a prefix for its next available IP or child prefix, from the UI or the API.</p></div>
+        </div>
+        <div class="where">source: <a class="lk" target="_blank" href="{{D}}features/ipam">IPAM features</a> &middot; example addresses are private-range illustrations</div>
+      </div>
+      <figure class="shot" style="background-image:url(assets/renders/ipam.webp)" role="img" aria-label="A grid of glowing towers viewed from above, teal for moderately used and amber for heavily used, like a city of address blocks"><figcaption>An address plan as a city. Taller and amber means fuller.</figcaption></figure>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 16 VIRTUALISATION -->
+<section class="slide" data-title="Virtualisation">
+  <div class="eyebrow">Model<span class="sep">&middot;</span>Clusters and virtual machines</div>
+  <h1>Hypervisors are devices. <span class="accent">Guests are virtual machines, on the same IP plan.</span></h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card" data-in="1"><h3>Clusters</h3><p>Group hosts into a cluster of a type you define, for example VMware, Proxmox or Kubernetes, optionally scoped to a site. Hypervisors stay ordinary devices in racks.</p><div class="links"><a class="nb" target="_blank" href="{{D}}models/virtualization/cluster">models/virtualization/cluster</a></div></div>
+      <div class="card" data-in="2"><h3>Virtual machines</h3><p>Record vCPUs, memory, disks, role, platform and status. Give them interfaces and assign IPs from the same prefixes your physical kit uses.</p><div class="links"><a class="nb" target="_blank" href="{{D}}models/virtualization/virtualmachine">models/virtualization/virtualmachine</a></div></div>
+      <div class="card hl" data-in="3"><h3>One search for everything</h3><p>Search an IP address and find the VM, its cluster, the host it sits on and the rack that host is in. That chain is the whole point of modelling both sides.</p></div>
+    </div>
+    <p class="note" data-in="4"><b>Be honest about scope:</b> community NetBox stores what you tell it. It does not read vCenter or a cloud account for you. Teams populate it from their platform with scripts or the API, which the integration chapter covers.</p>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 17 CIRCUITS -->
+<section class="slide" data-title="Circuits and providers">
+  <div class="eyebrow">Model<span class="sep">&middot;</span>Carriers and connectivity</div>
+  <h1>Know every circuit, who supplies it, <span class="accent">and where it lands.</span></h1>
+  <div class="body">
+    <div class="split rev">
+      <figure class="shot" style="background-image:url(assets/renders/globe.webp)" role="img" aria-label="A wireframe globe with amber arcs connecting glowing site markers around the world"><figcaption>Sites around the world, joined by the circuits that connect them.</figcaption></figure>
+      <div class="col">
+        <div class="tbl tight" data-in="1">
+          <div class="tr h c2" style="grid-template-columns:250px 1fr"><div>Object</div><div>Role</div></div>
+          <div class="tr c2" style="grid-template-columns:250px 1fr"><div class="n">Provider</div><div>The carrier, with account details and contacts</div></div>
+          <div class="tr c2" style="grid-template-columns:250px 1fr"><div class="n">Circuit type</div><div>Internet, MPLS, dark fibre and so on</div></div>
+          <div class="tr c2" style="grid-template-columns:250px 1fr"><div class="n">Circuit</div><div>The service, with its ID, status, commit rate and install date</div></div>
+          <div class="tr c2" style="grid-template-columns:250px 1fr"><div class="n">Termination</div><div>A and Z ends, each pointing at a site or provider network</div></div>
+        </div>
+        <p class="note" data-in="2">Cable a circuit termination to a device interface and the path trace runs from your router, across the circuit, to the far site. Add a custom field for contract renewal date and you have a renewals report.</p>
+        <div class="links" data-in="2"><a class="nb" target="_blank" href="{{D}}models/circuits/circuit">models/circuits/circuit</a><a class="nb" target="_blank" href="{{D}}models/circuits/provider">models/circuits/provider</a></div>
+      </div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>

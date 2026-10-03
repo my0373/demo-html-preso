@@ -1,0 +1,204 @@
+<!-- ============================================================ 26 CHANGE LOG -->
+<section class="slide" id="govern" data-title="Change log" data-topic="Govern">
+  <div class="eyebrow">Govern<span class="sep">&middot;</span>Accountability</div>
+  <h1>Every change is recorded, <span class="accent">with the before and the after.</span></h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card hl" data-in="1"><h3>What gets logged</h3><p>Each create, update and delete stores a serialised copy of the object from before and after, plus the time and the user. Bulk edits create one record per object, tied together by a request ID.</p></div>
+      <div class="card" data-in="2"><h3>Say why</h3><p>Users can attach a message of up to 200 characters to a change, in the UI or the REST API. It is the cheapest audit trail you will ever get.</p></div>
+      <div class="card" data-in="3"><h3>Get it out</h3><p>Browse it in the UI, export it as CSV, or read it from the API at <code>/api/extras/object-changes/</code>.</p></div>
+    </div>
+    <div class="g2 eq" data-in="4">
+      <div class="card warn"><h3>Retention is finite</h3><p>Changes are kept for 90 days by default, controlled by <code>CHANGELOG_RETENTION</code>. Set it to <code>0</code> to keep them for ever. If an audit needs a year of history, change it before you need it, not after.</p></div>
+      <div class="card"><h3>More than a log</h3><p>Journal entries hold human notes on an object. Notifications and subscriptions tell people when something they care about changed. Event rules can act on the same snapshots.</p></div>
+    </div>
+    <div class="where">source: <a class="lk" target="_blank" href="{{D}}features/change-logging">change logging</a> &middot; <a class="lk" target="_blank" href="{{D}}configuration/miscellaneous">configuration: CHANGELOG_RETENTION</a></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 27 PERMISSIONS -->
+<section class="slide" data-title="Permissions, tenancy and SSO">
+  <div class="eyebrow">Govern<span class="sep">&middot;</span>Who can do what</div>
+  <h1>Grant access by object, not just by page, <span class="accent">and sign in through your identity provider.</span></h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card hl" data-in="1"><h3>Object-based permissions</h3><p>A permission names the actions allowed (view, add, change, delete, or custom ones) on certain object types. Optional JSON constraints narrow it to a subset, for example only devices at one site or owned by one tenant.</p><div class="links"><a class="nb" target="_blank" href="{{D}}administration/permissions">administration/permissions</a></div></div>
+      <div class="card" data-in="2"><h3>Tenancy</h3><p>Tenants and tenant groups say who owns racks, devices, prefixes, circuits and VMs. Combined with constraints, a team can see and edit only its own estate.</p><div class="links"><a class="nb" target="_blank" href="{{D}}features/tenancy">features/tenancy</a></div></div>
+      <div class="card" data-in="3"><h3>Single sign-on</h3><p>The netbox-docker override example carries Okta OpenID Connect and Google OAuth2 settings, and the configuration folder has an LDAP slot. Local accounts still work for break-glass access.</p></div>
+    </div>
+    <div class="g2 eq" data-in="4">
+      <div class="card"><h3>API tokens</h3><p>Tokens map to a user and inherit that user's permissions. They can be marked read-only, and in 4.7 a token needs write ability to execute a custom script over REST.</p></div>
+      <div class="card warn"><h3>Test SSO before you upgrade</h3><p>4.7 upgraded the social-auth libraries by a major version each. Try your login flow on a non-production copy first.</p></div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 28 DAY-2 OPS -->
+<section class="slide" data-title="Backups and upgrades">
+  <div class="eyebrow">Govern<span class="sep">&middot;</span>Day-2 operations</div>
+  <h1>Back up the database and the volumes, <span class="accent">and rehearse the restore.</span></h1>
+  <div class="body">
+    <div class="split" style="grid-template-columns:1fr 1fr">
+      <div class="col">
+        <div class="code"><div class="bar"><span>backup</span><b>postgres</b></div><pre><span class="c"># Dump the database (name and user come from env/postgres.env)</span>
+docker compose exec -T postgres \
+  pg_dump -U netbox netbox | gzip &gt; netbox-$(date +%F).sql.gz
+
+<span class="c"># Then copy these volumes too</span>
+<span class="c">#   netbox-media-files</span>
+<span class="c">#   netbox-scripts-files</span>
+<span class="c">#   netbox-reports-files</span></pre></div>
+        <div class="card warn" data-in="1"><h3>A backup you have not restored is a hope</h3><p>A restore of a v4.7.0 dump skipped recreating hierarchical-path triggers and still reported success. Restore to a scratch instance and check that renaming a region updates its children.</p></div>
+      </div>
+      <div class="col">
+        <div class="card" data-in="2"><h3>Health</h3><p>The web container has a health check and the worker checks that <code>rqworker</code> is running. <code>docker compose ps</code> shows both. Allow about 90 seconds on a normal start, longer after a major upgrade.</p></div>
+        <div class="card" data-in="3"><h3>Metrics</h3><p>Prometheus-style metrics are off by default, via <code>METRICS_ENABLED=false</code> in the env file. Turn them on if you want to graph NetBox itself.</p></div>
+        <div class="card hl" data-in="4"><h3>Upgrading</h3><ul class="t"><li>Read the release notes between your version and the target</li><li>Let background queues drain, so no stale webhook jobs are in flight</li><li>Bump <code>VERSION</code> and check out the matching netbox-docker tag together</li><li><code>docker compose pull &amp;&amp; docker compose up -d</code></li></ul></div>
+        <p class="note" data-in="4">The <code>housekeeping</code> command was removed in 4.7. If you schedule it yourself, move to the individual management commands.</p>
+      </div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 29 USE CASE MAP -->
+<section class="slide" id="usecases" data-title="Use case map" data-topic="Use cases">
+  <div class="eyebrow">Use cases<span class="sep">&middot;</span>Where NetBox earns its keep</div>
+  <h1>Eight jobs people give NetBox, <span class="accent">and the objects each one uses.</span></h1>
+  <div class="body">
+    <div class="g4 eq">
+      <div class="card go ex" data-goto="uc-rack" data-in="1"><span class="nbr">01</span><h3>Data centre build and capacity</h3><p>Racks, space, power and cooling, plus a record of exactly what is plugged in where.</p><div class="tgs"><span class="tg s">rack</span><span class="tg s">device</span><span class="tg s">power</span></div></div>
+      <div class="card go ex" data-goto="uc-ip" data-in="1"><span class="nbr">02</span><h3>IP address management</h3><p>Allocate the next free address or block, keep VRFs and VLANs straight, stop collisions.</p><div class="tgs"><span class="tg s">prefix</span><span class="tg s">VRF</span><span class="tg s">VLAN</span></div></div>
+      <div class="card" data-in="2"><span class="nbr">03</span><h3>Campus and branch rollouts</h3><p>One site per branch, built from the same device roles, VLAN groups and config contexts, so branch 200 looks like branch 2.</p><div class="tgs"><span class="tg s">site</span><span class="tg s">role</span><span class="tg s">context</span></div></div>
+      <div class="card" data-in="2"><span class="nbr">04</span><h3>Virtualisation inventory</h3><p>Clusters, hosts and guests, with their addresses, in the same system as the physical estate.</p><div class="tgs"><span class="tg s">cluster</span><span class="tg s">VM</span></div></div>
+      <div class="card" data-in="3"><span class="nbr">05</span><h3>Circuit and carrier management</h3><p>Every circuit, its provider and both ends, plus a custom field for renewal dates.</p><div class="tgs"><span class="tg s">circuit</span><span class="tg s">provider</span></div></div>
+      <div class="card go ex" data-goto="uc-config" data-in="3"><span class="nbr">06</span><h3>Network automation</h3><p>Build inventories and render intended configuration from NetBox, then push it with your own tooling.</p><div class="tgs"><span class="tg s">API</span><span class="tg s">template</span></div></div>
+      <div class="card go ex" data-goto="uc-drift" data-in="4"><span class="nbr">07</span><h3>Intended versus actual</h3><p>Compare what you observe with what NetBox says should be there, and raise the differences.</p><div class="tgs"><span class="tg s">API</span><span class="tg s">event rule</span></div></div>
+      <div class="card" data-in="4"><span class="nbr">08</span><h3>Audit and lifecycle</h3><p>A change history for every object, and end-of-life dates on hardware for refresh planning.</p><div class="tgs"><span class="tg s">change log</span><span class="tg s">end of life</span></div></div>
+    </div>
+    <p class="note">Cards marked <b>worked example</b> jump to a full walk-through. Click one.</p>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 30 RACK A SERVER -->
+<section class="slide" id="uc-rack" data-title="Use case: rack a server">
+  <div class="eyebrow">Use case 01<span class="sep">&middot;</span>Data centre build</div>
+  <h1>Rack a new server on paper first, <span class="accent">so the floor work is just execution.</span></h1>
+  <div class="body">
+    <div class="flow">
+      <div class="fs" data-in="1"><span class="n">Step 1</span><b>Find the space</b><small>Pick a rack with free units, spare power and, if you use it, cooling headroom.</small></div>
+      <div class="fs" data-in="2"><span class="n">Step 2</span><b>Create the device</b><small>Choose its device type. Ports and bays appear automatically. Status: planned.</small></div>
+      <div class="fs" data-in="3"><span class="n">Step 3</span><b>Place it</b><small>Set the rack, face and starting unit. NetBox stops you overlapping another device.</small></div>
+      <div class="fs" data-in="4"><span class="n">Step 4</span><b>Cable it</b><small>Connect interfaces and power ports to their far ends. Paths trace through patch panels.</small></div>
+      <div class="fs" data-in="5"><span class="n">Step 5</span><b>Address it</b><small>Allocate an IP from the right prefix and mark it primary. Add the VLAN.</small></div>
+      <div class="fs" data-in="6"><span class="n">Step 6</span><b>Go live</b><small>Move status from planned through staged to active. The change log keeps the trail.</small></div>
+    </div>
+    <div class="g2 eq">
+      <div class="card hl" data-in="7"><h3>Hand the work order to the engineer</h3><p>Everything they need, rack, unit, cable ends and port labels, is on the device page. Export it, or print it.</p></div>
+      <div class="card" data-in="7"><h3>Automate the repeatable parts</h3><p>Wrap steps 2 to 5 in a custom script with a form, so a rack build is one submission instead of forty clicks.</p><div class="links"><a class="nb" target="_blank" href="{{D}}customization/custom-scripts">custom scripts</a></div></div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 31 NEXT FREE IP -->
+<section class="slide" id="uc-ip" data-title="Use case: next free IP">
+  <div class="eyebrow">Use case 02<span class="sep">&middot;</span>IP address management</div>
+  <h1>Stop picking addresses by eye. <span class="accent">Ask NetBox for the next free one.</span></h1>
+  <div class="body">
+    <div class="split" style="grid-template-columns:1fr 1fr">
+      <div class="code"><div class="bar"><span>curl</span><b>REST</b></div><pre><span class="c"># Next free address in prefix 42</span>
+curl -s -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  "$NETBOX/api/ipam/prefixes/42/available-ips/" \
+  --data '{"description": "web-01",
+           "status": "active"}'
+
+<span class="c"># Next free /28 inside container prefix 7</span>
+curl -s -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  "$NETBOX/api/ipam/prefixes/7/available-prefixes/" \
+  --data '{"prefix_length": 28}'</pre></div>
+      <div class="col">
+        <div class="code" data-in="1"><div class="bar"><span>pynetbox</span><b>python</b></div><pre>prefix = nb.ipam.prefixes.get(42)
+ip = prefix.available_ips.create(
+    {"description": "web-01"}
+)
+print(ip.address)</pre></div>
+        <div class="card hl" data-in="2"><h3>Why it is safe</h3><p>Allocation takes a lock inside NetBox, so two pipelines asking at the same moment do not receive the same address.</p></div>
+        <div class="card" data-in="3"><h3>Same idea for other pools</h3><p>IP ranges expose <code>available-ips</code>, VLAN groups expose <code>available-vlans</code> and ASN ranges expose <code>available-asns</code>.</p></div>
+      </div>
+    </div>
+    <div class="where">source: endpoints confirmed in the NetBox v{{NB}} source, <code>netbox/ipam/api/urls.py</code> &middot; <a class="lk" target="_blank" href="https://github.com/netbox-community/pynetbox">pynetbox</a></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 32 CONFIG PIPELINE -->
+<section class="slide" id="uc-config" data-title="Use case: intended configuration">
+  <div class="eyebrow">Use case 06<span class="sep">&middot;</span>Network automation</div>
+  <h1>Render each device's intended configuration from NetBox, <span class="accent">then push it with your own tooling.</span></h1>
+  <div class="body">
+    <div class="dia" style="height:240px" data-edges="nb>tpl|data;tpl>auto|rendered config;auto>dev|push">
+      <div class="nd hero" data-id="nb" style="left:40px;top:70px;width:360px"><span class="k">Source of truth</span><b>NetBox</b><small>Devices, interfaces, VLANs, config context</small></div>
+      <div class="nd" data-id="tpl" style="left:520px;top:70px;width:360px"><span class="k">Core feature</span><b>Config template</b><small>Jinja2, rendered per device</small></div>
+      <div class="nd ext" data-id="auto" style="left:1000px;top:70px;width:330px"><span class="k">Your tooling</span><b>Pipeline</b><small>Ansible, Nornir or CI</small></div>
+      <div class="nd ext" data-id="dev" style="left:1430px;top:70px;width:280px"><span class="k">Target</span><b>Network device</b><small>Receives the config</small></div>
+    </div>
+    <div class="g3 eq">
+      <div class="card hl" data-in="1"><h3>Where NetBox stops</h3><p>NetBox renders the text. Delivering it, validating it and rolling it back are jobs for the pipeline you already trust.</p></div>
+      <div class="card" data-in="2"><h3>Hold shared values once</h3><p>NTP, syslog and AAA servers live in config contexts by region or role. Change one record and every affected device renders the new value.</p></div>
+      <div class="card" data-in="3"><h3>Trigger it on change</h3><p>An event rule can start the pipeline when a device moves to active, or when an interface description changes.</p></div>
+    </div>
+    <div class="where">source: <a class="lk" target="_blank" href="{{D}}features/configuration-rendering">configuration rendering</a></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 33 DRIFT -->
+<section class="slide" id="uc-drift" data-title="Use case: intended versus actual">
+  <div class="eyebrow">Use case 07<span class="sep">&middot;</span>Keeping the record honest</div>
+  <h1>NetBox holds the intended state. <span class="accent">You bring the observed state and compare.</span></h1>
+  <div class="body">
+    <div class="flow">
+      <div class="fs" data-in="1"><span class="n">1</span><b>Observe</b><small>Monitoring, a script or your own discovery tooling reports what is actually there.</small></div>
+      <div class="fs" data-in="2"><span class="n">2</span><b>Compare</b><small>Read the matching objects from NetBox over the API and diff them.</small></div>
+      <div class="fs part" data-in="3"><span class="n">3</span><b>Decide</b><small>Is the device wrong, or is NetBox out of date?</small></div>
+      <div class="fs" data-in="4"><span class="n">4</span><b>Act</b><small>Raise a ticket, fix the device, or update NetBox. The change log records the update.</small></div>
+    </div>
+    <div class="g2 eq">
+      <div class="card" data-in="5"><h3>Examples teams automate</h3><ul class="t"><li>Neighbours seen by LLDP versus cables recorded in NetBox</li><li>Addresses answering on a subnet versus addresses allocated</li><li>Hosts reported by a hypervisor versus VMs recorded</li></ul></div>
+      <div class="card warn" data-in="6"><h3>Be clear about the boundary</h3><p>Community NetBox does not discover or poll anything. The observed side comes from tools you provide. NetBox gives you a trustworthy other side to compare against.</p></div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 34 GET STARTED -->
+<section class="slide" id="close" data-title="Your first week" data-topic="Close">
+  <div class="eyebrow">Close<span class="sep">&middot;</span>Where to go next</div>
+  <h1>A sensible first week, <span class="accent">and where to find help.</span></h1>
+  <div class="body">
+    <div class="g4 eq">
+      <div class="card" data-in="1"><span class="nbr">Day 1</span><h3>Stand it up</h3><p>Run the quick start with <code>{{TAG}}</code>, create your admin, and put a TLS proxy in front.</p></div>
+      <div class="card" data-in="2"><span class="nbr">Day 2</span><h3>Model one site</h3><p>One site, its racks, device types and a handful of devices. Get the shape right before scale.</p></div>
+      <div class="card" data-in="3"><span class="nbr">Day 3</span><h3>Import and connect</h3><p>Bulk load the rest by CSV, then create a token and make your first API call.</p></div>
+      <div class="card" data-in="4"><span class="nbr">Day 4</span><h3>Automate one thing</h3><p>A pynetbox script or an Ansible inventory is plenty. Add an event rule when you are ready.</p></div>
+    </div>
+    <div class="card hl" data-in="5"><h3>Do not skip</h3><p>Change the shipped secrets, take a backup, restore it somewhere safe, and decide how long you need the change log to reach.</p></div>
+    <div class="tbl tight" data-in="6">
+      <div class="tr h c3" style="grid-template-columns:260px 1fr 380px"><div>Resource</div><div>Use it for</div><div>Link</div></div>
+      <div class="tr c3" style="grid-template-columns:260px 1fr 380px"><div class="n">Documentation</div><div>Models, features, API, administration</div><div class="links"><a class="nb" target="_blank" href="{{D}}">official NetBox docs</a></div></div>
+      <div class="tr c3" style="grid-template-columns:260px 1fr 380px"><div class="n">Release v{{NB}}</div><div>What changed, and the 4.7.2 token note</div><div class="links"><a class="nb" target="_blank" href="https://github.com/netbox-community/netbox/releases/tag/v{{NB}}">github release v{{NB}}</a></div></div>
+      <div class="tr c3" style="grid-template-columns:260px 1fr 380px"><div class="n">netbox-docker</div><div>The containers, compose files and wiki</div><div class="links"><a class="nb" target="_blank" href="https://github.com/netbox-community/netbox-docker">netbox-community/netbox-docker</a></div></div>
+      <div class="tr c3" style="grid-template-columns:260px 1fr 380px"><div class="n">Public demo</div><div>Click around a populated instance first</div><div class="links"><a class="nb" target="_blank" href="https://demo.netbox.dev/">demo.netbox.dev</a></div></div>
+      <div class="tr c3" style="grid-template-columns:260px 1fr 380px"><div class="n">Questions</div><div>Community help and discussion</div><div class="links"><a class="nb" target="_blank" href="https://github.com/netbox-community/netbox/discussions">github discussions</a></div></div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>

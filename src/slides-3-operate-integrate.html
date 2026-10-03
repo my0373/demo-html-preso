@@ -1,0 +1,212 @@
+<!-- ============================================================ 18 CUSTOMISE -->
+<section class="slide" id="operate" data-title="Make it yours" data-topic="Operate">
+  <div class="eyebrow">Operate<span class="sep">&middot;</span>Customisation</div>
+  <h1>Bend the model to your estate <span class="accent">without forking anything.</span></h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card hl" data-in="1"><h3>Custom fields</h3><p>Add your own attributes to almost any object: text, integer, boolean, date, URL, JSON, a pick list or a reference to another object. They show in the UI, filters, exports and both APIs.</p><p class="note">4.7: selection fields now return both the raw value and its label in REST and GraphQL, for example <code>{"value": "datacenter", "label": "Data Center"}</code>.</p><div class="links"><a class="nb" target="_blank" href="{{D}}customization/custom-fields">customization/custom-fields</a></div></div>
+      <div class="card" data-in="2"><h3>Tags and config contexts</h3><p>Tags label anything for filtering. Config contexts attach JSON data to devices and VMs by site, role, platform, tenant or tag, then merge it, which is how you hold NTP servers or syslog targets once.</p><p class="note">4.7 pre-renders and caches the merged result per device and VM.</p><div class="links"><a class="nb" target="_blank" href="{{D}}features/context-data">features/context-data</a></div></div>
+      <div class="card" data-in="3"><h3>Make the UI fit</h3><p>Custom links jump from an object to your other tools. Export templates render data in any text format. Saved filters and dashboards give each team their own starting view.</p><div class="links"><a class="nb" target="_blank" href="{{D}}customization/custom-links">custom-links</a><a class="nb" target="_blank" href="{{D}}customization/export-templates">export-templates</a></div></div>
+    </div>
+    <div class="card" data-in="4"><h3>Config templates</h3><p>Write a Jinja2 template once, attach it to a device or role, and NetBox renders that device's configuration from its own data and merged config context. Rendering is core. Pushing the result to the device is left to your automation.</p><div class="links"><a class="nb" target="_blank" href="{{D}}features/configuration-rendering">features/configuration-rendering</a></div></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 19 REST API -->
+<section class="slide" data-title="REST API">
+  <div class="eyebrow">Operate<span class="sep">&middot;</span>REST API</div>
+  <h1>Everything in the UI is on the REST API, <span class="accent">with the docs built in.</span></h1>
+  <div class="body">
+    <div class="split" style="grid-template-columns:1fr 600px">
+      <div class="code"><div class="bar"><span>curl</span><b>/api/</b></div><pre><span class="c"># List active sites</span>
+curl -s -H "Authorization: Bearer $TOKEN" \
+     -H "Accept: application/json" \
+     "$NETBOX/api/dcim/sites/?status=active&amp;limit=5"
+
+<span class="c"># Create a site</span>
+curl -s -X POST \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     "$NETBOX/api/dcim/sites/" \
+     --data '{"name": "London 1", "slug": "lon1",
+              "status": "active"}'
+
+<span class="c"># Change one field</span>
+curl -s -X PATCH \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     "$NETBOX/api/dcim/sites/1/" \
+     --data '{"description": "Primary DC"}'</pre></div>
+      <div class="col">
+        <div class="card" data-in="1"><h3>Tokens</h3><p>Create one on your profile page. The server generates it, you cannot choose it, and you can only see it once, so store it straight away. A token can be read-only or write-enabled.</p></div>
+        <div class="card hl" data-in="2"><h3>Bulk writes, 4.7 style</h3><p>Send a list to a list endpoint to create or update many objects. Append <code>?background=true</code> to run it as a job. A <code>202</code> only means accepted, so check the job's final status.</p></div>
+        <div class="card" data-in="3"><h3>Explore it</h3><p>Your instance serves interactive API docs at <code>/api/docs/</code>.</p><div class="links"><a class="nb" target="_blank" href="{{D}}integrations/rest-api">integrations/rest-api</a></div></div>
+      </div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 20 GRAPHQL -->
+<section class="slide" data-title="GraphQL">
+  <div class="eyebrow">Operate<span class="sep">&middot;</span>GraphQL</div>
+  <h1>Ask for exactly the fields you need, <span class="accent">across related objects, in one call.</span></h1>
+  <div class="body">
+    <div class="split" style="grid-template-columns:1fr 1fr">
+      <div class="code"><div class="bar"><span>query</span><b>/graphql/</b></div><pre>query {
+  device_list(pagination: {offset: 0, limit: 20}) {
+    name
+    interfaces(filters: {enabled: true}) {
+      name
+    }
+  }
+}</pre></div>
+      <div class="code"><div class="bar"><span>curl</span><b>one-liner</b></div><pre>curl -s \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  "$NETBOX/graphql/" \
+  --data '{"query": "query {circuit_list(
+    filters:{status: STATUS_ACTIVE})
+    {cid provider {name}}}"}'</pre></div>
+    </div>
+    <div class="g3 eq">
+      <div class="card" data-in="1"><h3>Why use it</h3><p>REST returns whole objects and makes you follow links. GraphQL returns one tree shaped like your question, which suits dashboards and inventory builds.</p></div>
+      <div class="card" data-in="2"><h3>Filter the nested bits</h3><p>Filters work on related objects too, as the enabled-interfaces example shows, and combine with <code>OR</code> and <code>NOT</code>.</p></div>
+      <div class="card warn" data-in="3"><h3>Mind the 4.7 changes</h3><p>Service filters changed shape: <code>ports</code> became flat <code>port</code> lookups and protocol enum members lost their <code>ROLE_</code> prefix.</p></div>
+    </div>
+    <div class="where">source: <a class="lk" target="_blank" href="{{D}}integrations/graphql-api">GraphQL API documentation</a> &middot; enabled by <code>GRAPHQL_ENABLED=true</code> in the netbox-docker env file</div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 21 EVENT RULES -->
+<section class="slide" data-title="Event rules and webhooks">
+  <div class="eyebrow">Operate<span class="sep">&middot;</span>React to change</div>
+  <h1>When something changes in NetBox, <span class="accent">make something else happen.</span></h1>
+  <div class="body">
+    <div class="flow">
+      <div class="fs" data-in="1"><span class="n">1</span><b>Object changes</b><small>Created, updated or deleted, in the UI or the API.</small></div>
+      <div class="fs" data-in="1"><span class="n">2</span><b>Event rule matches</b><small>By object type, event and an optional condition.</small></div>
+      <div class="fs" data-in="2"><span class="n">3</span><b>Queued in Redis</b><small>The user's request finishes without waiting.</small></div>
+      <div class="fs" data-in="2"><span class="n">4</span><b>Worker runs it</b><small>The <code>rqworker</code> picks the event up.</small></div>
+      <div class="fs" data-in="3"><span class="n">5</span><b>Action</b><small>A webhook, a custom script or a user notification.</small></div>
+    </div>
+    <div class="split" style="grid-template-columns:1fr 1fr">
+      <div class="code" data-in="4"><div class="bar"><span>condition</span><b>json</b></div><pre>{
+  "and": [
+    {
+      "attr": "status.value",
+      "value": "active"
+    }
+  ]
+}</pre></div>
+      <div class="col">
+        <div class="card" data-in="4"><h3>Example</h3><p>Tell your monitoring system to start watching a device the moment its status becomes active, and stop when it changes to anything else.</p></div>
+        <div class="card hl" data-in="5"><h3>New in 4.7</h3><p>Conditions can read pre-change and post-change snapshots. Use <code>changed</code> or <code>unchanged</code> to fire only when a specific attribute moved.</p></div>
+        <p class="note" data-in="5"><b>Heads up:</b> webhooks have a configurable timeout in 4.7. If you lowered <code>RQ_DEFAULT_TIMEOUT</code> to 60 seconds or less, also set <code>WEBHOOK_DEFAULT_TIMEOUT</code> or NetBox will refuse to start.</p>
+      </div>
+    </div>
+    <div class="where">source: <a class="lk" target="_blank" href="{{D}}features/event-rules">event rules</a> &middot; <a class="lk" target="_blank" href="{{D}}integrations/webhooks">webhooks</a></div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 22 CUSTOM SCRIPTS -->
+<section class="slide" data-title="Custom scripts">
+  <div class="eyebrow">Operate<span class="sep">&middot;</span>Python inside NetBox</div>
+  <h1>A custom script is a Python class <span class="accent">that runs with full access to your data.</span></h1>
+  <div class="body">
+    <div class="split" style="grid-template-columns:1fr 600px">
+      <div class="code"><div class="bar"><span>scripts/offline_devices.py</span><b>python</b></div><pre><span class="k">from</span> dcim.choices <span class="k">import</span> DeviceStatusChoices
+<span class="k">from</span> dcim.models <span class="k">import</span> Device
+<span class="k">from</span> extras.scripts <span class="k">import</span> Script
+
+
+<span class="k">class</span> OfflineDevices(Script):
+    <span class="k">class</span> Meta(Script.Meta):
+        name = <span class="s">"Offline devices"</span>
+        description = <span class="s">"Flag devices marked offline"</span>
+
+    <span class="k">def</span> run(self, data, commit):
+        offline = Device.objects.filter(
+            status=DeviceStatusChoices.STATUS_OFFLINE
+        )
+        <span class="k">for</span> device <span class="k">in</span> offline:
+            self.log_warning(
+                f<span class="s">"{device.name} is offline"</span>, device
+            )
+        self.log_success(<span class="s">"Check complete"</span>)</pre></div>
+      <div class="col">
+        <div class="card" data-in="1"><h3>Where it goes</h3><p>Drop the file into the scripts volume. In netbox-docker that is <code>netbox-scripts-files</code>, mounted into the container.</p></div>
+        <div class="card" data-in="2"><h3>Ways to run it</h3><p>From the UI with generated input forms, from the REST API, or as a reaction to an event rule. From 4.7 the REST route needs a write-enabled token.</p></div>
+        <div class="card hl" data-in="3"><h3>What people build</h3><p>Provisioning wizards, bulk rack builds, consistency reports and data clean-ups, all using the same models NetBox itself uses.</p></div>
+        <div class="links" data-in="3"><a class="nb" target="_blank" href="{{D}}customization/custom-scripts">customization/custom-scripts</a></div>
+      </div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 23 INTEGRATION HUB -->
+<section class="slide" id="integrate" data-title="NetBox at the centre" data-topic="Integrate">
+  <div class="eyebrow">Integrate<span class="sep">&middot;</span>The hub pattern</div>
+  <h1>NetBox sits in the middle. <span class="accent">Other tools read it, feed it and react to it.</span></h1>
+  <div class="body">
+    <div class="split rev">
+      <figure class="shot" style="background-image:url(assets/renders/hub.webp)" role="img" aria-label="A glowing teal cube in the centre linked by curved cables to eight coloured shapes arranged in a ring"><figcaption>One source of truth, many consumers.</figcaption></figure>
+      <div class="col">
+        <div class="card hl" data-in="1"><h3>Read from it</h3><p>Build inventories, render configs and populate dashboards from intended state, over REST or GraphQL.</p></div>
+        <div class="card" data-in="2"><h3>Feed it</h3><p>Load what you already know from spreadsheets, a hypervisor, a cloud account or a CMDB, using the API or a script. NetBox stores it. It does not collect it.</p></div>
+        <div class="card" data-in="3"><h3>React to it</h3><p>Event rules and webhooks turn a change in NetBox into a ticket, a pipeline run or a chat message.</p></div>
+      </div>
+    </div>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 24 TOOLS -->
+<section class="slide" data-title="Ansible, Terraform and Python">
+  <div class="eyebrow">Integrate<span class="sep">&middot;</span>Client tooling</div>
+  <h1>Three well-trodden ways in: <span class="accent">Python, Ansible and Terraform.</span></h1>
+  <div class="body">
+    <div class="tbl tight">
+      <div class="tr h c3" style="grid-template-columns:230px 1fr 330px"><div>Tool</div><div>What it gives you</div><div>Find it</div></div>
+      <div class="tr c3" style="grid-template-columns:230px 1fr 330px"><div class="n">pynetbox</div><div>The community Python client. Query and update objects as Python objects instead of raw JSON</div><div class="links"><a class="nb" target="_blank" href="https://github.com/netbox-community/pynetbox">netbox-community/pynetbox</a></div></div>
+      <div class="tr c3" style="grid-template-columns:230px 1fr 330px"><div class="n">Ansible collection</div><div>A dynamic inventory plugin to build hosts and groups from NetBox, plus modules to create and update objects</div><div class="links"><a class="nb" target="_blank" href="https://github.com/netbox-community/ansible_modules">netbox-community/ansible_modules</a></div></div>
+      <div class="tr c3" style="grid-template-columns:230px 1fr 330px"><div class="n">Terraform provider</div><div>A community provider for managing NetBox objects as code alongside the rest of your infrastructure</div><div class="links"><a class="nb" target="_blank" href="https://registry.terraform.io/providers/e-breuninger/netbox/latest">e-breuninger/netbox</a></div></div>
+    </div>
+    <div class="split" style="grid-template-columns:1fr 1fr">
+      <div class="code" data-in="1"><div class="bar"><span>pynetbox</span><b>python</b></div><pre><span class="k">import</span> pynetbox
+
+nb = pynetbox.api(NETBOX_URL, token=NETBOX_TOKEN)
+
+<span class="k">for</span> d <span class="k">in</span> nb.dcim.devices.filter(site=<span class="s">"lon1"</span>,
+                                 status=<span class="s">"active"</span>):
+    print(d.name, d.primary_ip)</pre></div>
+      <div class="code" data-in="2"><div class="bar"><span>nb_inventory.yml</span><b>ansible</b></div><pre>plugin: netbox.netbox.nb_inventory
+api_endpoint: http://localhost:8000
+token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
+group_by:
+  - sites
+  - device_roles</pre></div>
+    </div>
+    <p class="note" data-in="3">Check each tool's own release notes against 4.7 before upgrading production. Client libraries move on their own schedule, and 4.7 changed API response shapes for selection custom fields and bulk errors.</p>
+  </div>
+  {{FOOTER}}
+</section>
+
+<!-- ============================================================ 25 PLUGINS -->
+<section class="slide" data-title="Plugins">
+  <div class="eyebrow">Integrate<span class="sep">&middot;</span>Extending NetBox itself</div>
+  <h1>When configuration is not enough, <span class="accent">a plugin adds first-class features.</span></h1>
+  <div class="body">
+    <div class="g3 eq">
+      <div class="card hl" data-in="1"><h3>What a plugin can add</h3><ul class="t"><li>New models, with their own pages and API endpoints</li><li>Navigation entries and extra panels on built-in pages</li><li>Background jobs, search indexes and GraphQL types</li></ul></div>
+      <div class="card" data-in="2"><h3>The community ecosystem</h3><p>Plugins exist for BGP, topology diagrams, inventory tracking and secrets, among much else. Browse GitHub and the plugin directory, then read each plugin's compatibility table.</p><div class="links"><a class="nb" target="_blank" href="https://github.com/topics/netbox-plugin">github topic: netbox-plugin</a></div></div>
+      <div class="card" data-in="3"><h3>Using one with netbox-docker</h3><p>Build a small image on top of the netbox-docker one that installs the plugin, then enable it in <code>configuration/plugins.py</code>. The netbox-docker wiki walks through it.</p><div class="links"><a class="nb" target="_blank" href="https://github.com/netbox-community/netbox-docker/wiki/Using-Netbox-Plugins">wiki: using plugins</a></div></div>
+    </div>
+    <div class="card warn" data-in="4"><h3>Before you upgrade to 4.7</h3><p>4.7 moved nested group models to <code>ltree</code> (the old MPTT base class is kept but deprecated), upgraded django-tables2 to 3.0 (removing <code>RelatedLinkColumn</code>), and changed how email settings are exposed. A plugin that has not declared 4.7 support may fail at startup. Test it on a copy first.</p><div class="where">source: <a class="lk" target="_blank" href="{{D}}release-notes/version-4.7">v4.7 release notes, Breaking Changes</a></div></div>
+  </div>
+  {{FOOTER}}
+</section>
