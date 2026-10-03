@@ -1,8 +1,8 @@
 # Using community NetBox: an HTML presentation
 
 A 34-slide browser presentation on how to use **community NetBox**, from running it with
-netbox-docker through to automation, with eight use cases. It carries Blender 3D renders and a
-jump-to-slide search.
+netbox-docker through to automation, with eight use cases. It carries animated Blender 3D loops
+and a jump-to-slide search.
 
 | | |
 |---|---|
@@ -45,7 +45,7 @@ python3 build.py
 | `src/extra.css`, `src/extra.js` | This deck's additions: hero image, code panels, jump search, goto links |
 | `build.py` | Assembles `index.html`. The three version constants at the top are the only place versions live |
 | `blender/scenes.py` | The six Blender scenes |
-| `assets/renders/` | The rendered images, in WebP |
+| `assets/renders/` | The rendered loops (`.mp4`) and their poster frames (`.jpg`) |
 
 ### Moving to a new release
 
@@ -54,22 +54,47 @@ python3 build.py
    upgrades, the 4.7 features and the API are the ones tied to a version.
 3. Check the image tag exists: `https://hub.docker.com/r/netboxcommunity/netbox/tags`.
 
-## Re-render the 3D images
+## Re-render the 3D loops
 
-The renders are made with Blender (built with 5.2.2 LTS), headless, so nothing in an open Blender
-session is touched:
+The six 3D images are short **seamless animation loops**: 96 frames at 24 fps, so 4 seconds, in
+H.264 MP4. They are made with Blender (built with 5.2.2 LTS), headless, so nothing in an open
+Blender session is touched. `ffmpeg` encodes the result.
 
 ```
-/Applications/Blender.app/Contents/MacOS/Blender -b -P blender/scenes.py -- [--quick] [scene ...]
+/Applications/Blender.app/Contents/MacOS/Blender -b -P blender/scenes.py -- [--quick] [--keep] [scene ...]
 ```
 
-Scenes: `hero`, `datamodel`, `containers`, `ipam`, `globe`, `hub`. With no names it renders all
-six. `--quick` lowers the samples for a fast preview. Output goes to `assets/renders/` and can be
+Scenes: `hero`, `datamodel`, `containers`, `ipam`, `globe`, `hub`. With no names it renders all six.
+`--quick` renders at a third of the size with fewer samples, for a fast preview. `--keep` keeps
+the PNG frames in `blender/_frames/` (ignored by git). Output goes to `assets/renders/` and can be
 redirected with `DECK_RENDER_DIR`.
+
+Each scene writes two files: `<name>.mp4` (the loop) and `<name>.jpg` (its first frame). The page
+uses the JPEG as the poster and as the fallback for anyone with reduced motion turned on.
+
+What moves in each scene: rack LEDs blink and pulse and light beads run along the overhead cabling
+(`hero`); a wave of light climbs the tiers (`datamodel`); requests flow between services and status
+lights blink (`containers`); address columns ripple in a diagonal wave while a light circles the
+grid (`ipam`); traffic runs along circuits on a rocking globe (`globe`); the core turns, satellites
+bob and pulses run along every spoke (`hub`). Every movement is a whole number of cycles per loop,
+which is what makes the seam invisible.
 
 Do not run it from inside a live Blender session through the MCP server. The render operator
 draws the window's active scene, so you would render whatever is open instead of the scene built
 here. That is why the script is headless.
+
+## Motion in the page
+
+All of it is plain CSS and a little JavaScript, with no libraries, and all of it is switched off
+when the viewer has `prefers-reduced-motion` set.
+
+- The 3D loops play **only on the slide in view**. All six preload up front (about 2.7 MB), so each
+  starts instantly.
+- Diagram connectors carry travelling beads of light, each out of step with its neighbours.
+- Slides ease in (eyebrow, headline, then body), with a one-off shimmer across the teal words.
+- Code blocks settle in line by line and end on a blinking caret.
+- Table rows cascade, flow chevrons pulse, and flow steps light up in sequence.
+- Highlighted cards breathe, status chips glow, and a faint ambient light drifts behind everything.
 
 ## Where the facts come from
 

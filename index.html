@@ -223,7 +223,7 @@
   .ovg em{font-style:normal;color:var(--teal);margin-right:10px}
 
   /* ---- deck additions (community NetBox deck) ---- */
-  .s-title .bgimg{position:absolute;inset:0;background:var(--bg) url(assets/renders/hero.webp) center/cover no-repeat}
+  .s-title .bgimg{position:absolute;inset:0;background:var(--bg) center/cover no-repeat}
   .s-title .bgimg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,20,35,.96) 0%,rgba(0,20,35,.82) 38%,rgba(0,20,35,.15) 75%,rgba(0,20,35,.35) 100%)}
   .s-title>*:not(.bgimg):not(.footer){position:relative;z-index:1}
   .s-title .vchips{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
@@ -273,6 +273,89 @@
   /* plain text wordmark, no logo artwork */
   .footer .brand{display:flex;align-items:center;gap:18px}
   .titlemark{font-size:64px;font-weight:800;letter-spacing:-.035em;line-height:1;margin-bottom:34px}
+
+  /* ---- motion: video loops ---- */
+  .bgimg video,.shot video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .shot figcaption{z-index:2}
+  .s-title .bgimg{background:var(--bg) center/cover no-repeat}
+  .s-title .bgimg{z-index:0}
+  .s-title .bgimg::after{z-index:1}
+  .s-title .footer{z-index:2}
+
+  /* ---- motion: ambient and entrance. Subtle by design, and all of it off for reduced motion ---- */
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  @keyframes drift{0%{transform:translate(-3%,-2%) scale(1)}100%{transform:translate(3%,2%) scale(1.08)}}
+  @keyframes ping{0%{box-shadow:0 0 0 0 rgba(0,242,212,.55)}70%,100%{box-shadow:0 0 0 9px rgba(0,242,212,0)}}
+  @keyframes breathe{0%,100%{box-shadow:0 0 0 rgba(0,242,212,0);border-color:var(--line-strong)}50%{box-shadow:0 0 26px rgba(0,242,212,.16);border-color:rgba(0,242,212,.85)}}
+  @keyframes chipglow{0%,100%{box-shadow:0 0 0 rgba(0,242,212,0)}50%{box-shadow:0 0 14px rgba(0,242,212,.28)}}
+  @keyframes heroglow{0%,100%{box-shadow:0 0 22px rgba(0,242,212,.12)}50%{box-shadow:0 0 44px rgba(0,242,212,.3)}}
+  @keyframes sheen{from{background-position:100% 0}to{background-position:0% 0}}
+  @keyframes progsheen{from{background-position:0 0}to{background-position:200% 0}}
+  @keyframes gridmove{to{background-position:26px 26px}}
+  @keyframes nudge{0%,100%{transform:translateY(-50%) rotate(45deg) translate(0,0);opacity:.55}50%{transform:translateY(-50%) rotate(45deg) translate(3px,-3px);opacity:1}}
+  @keyframes stepglow{0%,22%,100%{border-color:var(--line);box-shadow:none}7%,15%{border-color:var(--teal);box-shadow:0 0 24px rgba(0,242,212,.18)}}
+  @keyframes blinkcaret{0%,49%{opacity:1}50%,100%{opacity:0}}
+  @keyframes linein{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+  @keyframes scan{0%{top:-2.2em}100%{top:100%}}
+  @keyframes markglow{0%,100%{text-shadow:0 0 0 rgba(0,242,212,0)}50%{text-shadow:0 0 30px rgba(0,242,212,.45)}}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+  .stage::before{content:"";position:absolute;inset:-20%;pointer-events:none;
+    background:radial-gradient(620px 420px at 18% 28%,rgba(0,242,212,.07),transparent 70%),radial-gradient(760px 520px at 82% 72%,rgba(179,157,255,.05),transparent 70%);
+    animation:drift 30s ease-in-out infinite alternate}
+
+  .slide.active .eyebrow{animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+  .slide.active h1{animation:rise .7s .08s cubic-bezier(.2,.7,.2,1) both}
+  .slide.active .lede,.slide.active .vchips{animation:rise .7s .22s cubic-bezier(.2,.7,.2,1) both}
+  .slide.active .where{animation:fadein .8s .5s both}
+  .slide.active h1 .accent{background:linear-gradient(100deg,var(--teal) 35%,#d6fff9 50%,var(--teal) 65%) 100% 0/250% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:sheen 1.9s .55s ease-out both}
+
+  .eyebrow{position:relative}
+  .eyebrow::before{content:"";position:absolute;left:-26px;top:50%;margin-top:-4px;width:8px;height:8px;border-radius:50%;background:var(--teal);animation:ping 2.6s ease-out infinite}
+
+  .prog{background:linear-gradient(90deg,var(--teal),#a6fff1 25%,var(--teal) 50%,#a6fff1 75%,var(--teal));background-size:200% 100%;animation:progsheen 5s linear infinite}
+  .card.hl{animation:breathe 5s ease-in-out infinite}
+  .st.ok{animation:chipglow 3.4s ease-in-out infinite}
+  .vchips .st::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:8px;animation:ping 2.6s ease-out infinite}
+  .vchips .st:nth-child(2),.vchips .st:nth-child(2)::before{animation-delay:.5s}
+  .vchips .st:nth-child(3),.vchips .st:nth-child(3)::before{animation-delay:1s}
+  .titlemark{animation:markglow 5s ease-in-out infinite}
+  .card.go:hover{transform:translateY(-3px)}
+  a.nb::after{display:inline-block;transition:transform .2s}
+  a.nb:hover::after{transform:translate(2px,-2px)}
+
+  .slide.active .tbl .tr{animation:rise .5s both}
+  .tbl .tr:nth-child(1){animation-delay:.06s!important}.tbl .tr:nth-child(2){animation-delay:.12s!important}.tbl .tr:nth-child(3){animation-delay:.18s!important}
+  .tbl .tr:nth-child(4){animation-delay:.24s!important}.tbl .tr:nth-child(5){animation-delay:.3s!important}.tbl .tr:nth-child(6){animation-delay:.36s!important}
+  .tbl .tr:nth-child(7){animation-delay:.42s!important}.tbl .tr:nth-child(8){animation-delay:.48s!important}.tbl .tr:nth-child(9){animation-delay:.54s!important}
+
+  .dia::before{animation:gridmove 28s linear infinite}
+  .nd.hero{animation:heroglow 4.2s ease-in-out infinite}
+  .dia svg.e circle.pk{fill:var(--teal);filter:drop-shadow(0 0 5px var(--teal))}
+  .dia svg.e circle.pk.y{fill:var(--yellow);filter:drop-shadow(0 0 5px var(--yellow))}
+  .dia svg.e circle.pk.r{fill:var(--red);filter:drop-shadow(0 0 5px var(--red))}
+  .dia svg.e circle.pk.v{fill:var(--violet);filter:drop-shadow(0 0 5px var(--violet))}
+
+  .flow .fs + .fs::before{animation:nudge 1.9s ease-in-out infinite}
+  .flow .fs:nth-child(3)::before{animation-delay:.25s}.flow .fs:nth-child(4)::before{animation-delay:.5s}
+  .flow .fs:nth-child(5)::before{animation-delay:.75s}.flow .fs:nth-child(6)::before{animation-delay:1s}
+  .flow .fs:not(.bad):not(.part){animation:stepglow 7s ease-in-out infinite}
+  .flow .fs:nth-child(2){animation-delay:1.1s!important}.flow .fs:nth-child(3){animation-delay:2.2s!important}
+  .flow .fs:nth-child(4){animation-delay:3.3s!important}.flow .fs:nth-child(5){animation-delay:4.4s!important}.flow .fs:nth-child(6){animation-delay:5.5s!important}
+
+  .code pre{position:relative}
+  .code pre .ln:last-child::after{content:"\258C";color:var(--teal);margin-left:2px;animation:blinkcaret 1.1s steps(1) infinite}
+  .code .ln{display:block;min-height:1.55em}
+  .code[data-in].vis .ln,.slide.active .code:not([data-in]) .ln{animation:linein .45s calc(var(--i) * 45ms + .3s) both}
+  .tree{position:relative;overflow:hidden}
+  .tree::after{content:"";position:absolute;left:0;right:0;top:-2.2em;height:2em;background:linear-gradient(180deg,transparent,rgba(0,242,212,.07),transparent);animation:scan 6.5s linear infinite;pointer-events:none}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    .bgimg video,.shot video{display:none}
+    .dia svg.e circle.pk{display:none}
+  }
 </style>
 </head>
 <body>
@@ -283,7 +366,7 @@
 <button class="jumpbtn" id="jumpbtn" type="button">Jump to slide <kbd>G</kbd></button>
 <!-- ============================================================ 1 TITLE -->
 <section class="slide s-title active" id="title" data-title="Title" data-topic="Intro">
-  <div class="bgimg" role="img" aria-label="A data centre aisle rendered in Blender, racks lit in teal and amber with glowing overhead cabling"></div>
+  <div class="bgimg" style="background-image:url(assets/renders/hero.jpg)" role="img" aria-label="A data centre aisle rendered in Blender, racks lit in teal and amber with glowing overhead cabling"><video class="loop" muted loop playsinline preload="auto" poster="assets/renders/hero.jpg"><source src="assets/renders/hero.mp4" type="video/mp4"></video></div>
   <div class="titlemark">netbox</div>
   <div class="eyebrow">Community NetBox<span class="sep">&middot;</span>A hands-on tour<span class="sep">&middot;</span>3 October 2026</div>
   <h1>Using NetBox, <span class="accent">from first container to real automation.</span></h1>
@@ -393,7 +476,7 @@
         <p class="note" data-in="3">From 4.7 the nested group models (regions, locations, device roles and more) are stored with PostgreSQL <code>ltree</code> rather than django-mptt. Plugin authors need to know. Everyone else just gets faster tree queries.</p>
         <div class="where">source: <a class="lk" target="_blank" href="https://netboxlabs.com/docs/netbox/features/">NetBox features overview</a></div>
       </div>
-      <figure class="shot" style="background-image:url(assets/renders/datamodel.webp)" role="img" aria-label="Five glowing tiers stacked like a pyramid, from region at the bottom to device at the top"><figcaption>Region, site, location, rack, device. Each tier narrows to the thing you rack.</figcaption></figure>
+      <figure class="shot" style="background-image:url(assets/renders/datamodel.jpg)" role="img" aria-label="Five glowing tiers stacked like a pyramid, from region at the bottom to device at the top"><video class="loop" muted loop playsinline preload="auto" poster="assets/renders/datamodel.jpg"><source src="assets/renders/datamodel.mp4" type="video/mp4"></video><figcaption>Region, site, location, rack, device. Each tier narrows to the thing you rack.</figcaption></figure>
     </div>
   </div>
   <div class="footer"><div class="brand"><div class="wordmark">netbox</div></div><div class="right"><span>Community NetBox 4.7.2 &middot; netbox-docker 5.1.1</span><div class="num"></div></div></div>
@@ -442,7 +525,7 @@ docker compose exec netbox /opt/netbox/netbox/manage.py createsuperuser</pre></d
         <p class="note">Give it a few minutes on first start while the database migrates. Then open <code>http://localhost:8000/</code>. The override example maps host port 8000 to the container's 8080.</p>
         <p class="note">Restarting from an empty database a lot? Set the <code>SUPERUSER_*</code> variables in the override file instead of running <code>createsuperuser</code> by hand.</p>
       </div>
-      <figure class="shot" style="background-image:url(assets/renders/containers.webp)" role="img" aria-label="A glowing plinth carrying a large central block with a database cylinder, a cache cube and a worker block linked to it"><figcaption>NetBox in the middle, its database, cache and worker around it.</figcaption></figure>
+      <figure class="shot" style="background-image:url(assets/renders/containers.jpg)" role="img" aria-label="A glowing plinth carrying a large central block with a database cylinder, a cache cube and a worker block linked to it"><video class="loop" muted loop playsinline preload="auto" poster="assets/renders/containers.jpg"><source src="assets/renders/containers.mp4" type="video/mp4"></video><figcaption>NetBox in the middle, its database, cache and worker around it.</figcaption></figure>
     </div>
     <div class="where">source: <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker#quickstart">netbox-docker README, Quickstart</a> &middot; <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker/wiki/Getting-Started">Getting Started wiki</a></div>
   </div>
@@ -588,7 +671,7 @@ docker compose exec netbox /opt/netbox/netbox/manage.py createsuperuser</pre></d
         </div>
         <div class="where">source: <a class="lk" target="_blank" href="https://netboxlabs.com/docs/netbox/features/ipam">IPAM features</a> &middot; example addresses are private-range illustrations</div>
       </div>
-      <figure class="shot" style="background-image:url(assets/renders/ipam.webp)" role="img" aria-label="A grid of glowing towers viewed from above, teal for moderately used and amber for heavily used, like a city of address blocks"><figcaption>An address plan as a city. Taller and amber means fuller.</figcaption></figure>
+      <figure class="shot" style="background-image:url(assets/renders/ipam.jpg)" role="img" aria-label="A grid of glowing towers viewed from above, teal for moderately used and amber for heavily used, like a city of address blocks"><video class="loop" muted loop playsinline preload="auto" poster="assets/renders/ipam.jpg"><source src="assets/renders/ipam.mp4" type="video/mp4"></video><figcaption>An address plan as a city. Taller and amber means fuller.</figcaption></figure>
     </div>
   </div>
   <div class="footer"><div class="brand"><div class="wordmark">netbox</div></div><div class="right"><span>Community NetBox 4.7.2 &middot; netbox-docker 5.1.1</span><div class="num"></div></div></div>
@@ -615,7 +698,7 @@ docker compose exec netbox /opt/netbox/netbox/manage.py createsuperuser</pre></d
   <h1>Know every circuit, who supplies it, <span class="accent">and where it lands.</span></h1>
   <div class="body">
     <div class="split rev">
-      <figure class="shot" style="background-image:url(assets/renders/globe.webp)" role="img" aria-label="A wireframe globe with amber arcs connecting glowing site markers around the world"><figcaption>Sites around the world, joined by the circuits that connect them.</figcaption></figure>
+      <figure class="shot" style="background-image:url(assets/renders/globe.jpg)" role="img" aria-label="A wireframe globe with amber arcs connecting glowing site markers around the world"><video class="loop" muted loop playsinline preload="auto" poster="assets/renders/globe.jpg"><source src="assets/renders/globe.mp4" type="video/mp4"></video><figcaption>Sites around the world, joined by the circuits that connect them.</figcaption></figure>
       <div class="col">
         <div class="tbl tight" data-in="1">
           <div class="tr h c2" style="grid-template-columns:250px 1fr"><div>Object</div><div>Role</div></div>
@@ -788,7 +871,7 @@ curl -s -X PATCH \
   <h1>NetBox sits in the middle. <span class="accent">Other tools read it, feed it and react to it.</span></h1>
   <div class="body">
     <div class="split rev">
-      <figure class="shot" style="background-image:url(assets/renders/hub.webp)" role="img" aria-label="A glowing teal cube in the centre linked by curved cables to eight coloured shapes arranged in a ring"><figcaption>One source of truth, many consumers.</figcaption></figure>
+      <figure class="shot" style="background-image:url(assets/renders/hub.jpg)" role="img" aria-label="A glowing teal cube in the centre linked by curved cables to eight coloured shapes arranged in a ring"><video class="loop" muted loop playsinline preload="auto" poster="assets/renders/hub.jpg"><source src="assets/renders/hub.mp4" type="video/mp4"></video><figcaption>One source of truth, many consumers.</figcaption></figure>
       <div class="col">
         <div class="card hl" data-in="1"><h3>Read from it</h3><p>Build inventories, render configs and populate dashboards from intended state, over REST or GraphQL.</p></div>
         <div class="card" data-in="2"><h3>Feed it</h3><p>Load what you already know from spreadsheets, a hypervisor, a cloud account or a CMDB, using the API or a script. NetBox stores it. It does not collect it.</p></div>
@@ -1216,6 +1299,46 @@ addEventListener('hashchange', () => {
   const h = location.hash.slice(1), i = isNaN(+h) ? slides.findIndex(s => s.id === h) : +h - 1;
   if (i >= 0 && i !== cur) go(i);
 });
+
+/* ---- motion ---- */
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Code blocks: one span per line, so lines can settle in one after another
+document.querySelectorAll('.code pre').forEach(pre => {
+  pre.innerHTML = pre.innerHTML.split('\n').map((l, i) => `<span class="ln" style="--i:${i}">${l}</span>`).join('');
+});
+
+// Diagram edges: a bead of light travels each connector, out of step with its neighbours
+const SVGNS = 'http://www.w3.org/2000/svg';
+const drawEdges = edges;
+edges = function(el){
+  drawEdges(el);
+  if (reduceMotion) return;
+  el.querySelectorAll('.dia svg.e').forEach(svg => {
+    svg.querySelectorAll('path').forEach((p, i) => {
+      const c = document.createElementNS(SVGNS, 'circle');
+      c.setAttribute('r', '4.5'); c.setAttribute('class', 'pk ' + (p.getAttribute('class') || ''));
+      const a = document.createElementNS(SVGNS, 'animateMotion');
+      a.setAttribute('dur', (2.8 + (i % 3) * 0.6) + 's'); a.setAttribute('repeatCount', 'indefinite');
+      a.setAttribute('begin', (-i * 0.9) + 's'); a.setAttribute('path', p.getAttribute('d'));
+      c.appendChild(a); svg.appendChild(c);
+    });
+  });
+};
+
+// Video loops: all preload (about 2.7 MB in total), only the slide in view plays
+const loops = [...document.querySelectorAll('video.loop')];
+loops.forEach(v => { v.muted = true; v.loop = true; v.playsInline = true; });
+function syncVideo(){
+  loops.forEach(v => {
+    const i = slides.indexOf(v.closest('.slide'));
+    if (reduceMotion) return;
+    if (i === cur) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+    else if (!v.paused) v.pause();
+  });
+}
+const paintSlide = paint;
+paint = function(){ paintSlide(); syncVideo(); };
 
   const hs = location.hash.slice(1), hi = isNaN(+hs) ? slides.findIndex(s => s.id === hs) : +hs - 1;
   go(hi < 0 || isNaN(hi) ? 0 : hi);

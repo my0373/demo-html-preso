@@ -49,3 +49,43 @@ addEventListener('hashchange', () => {
   const h = location.hash.slice(1), i = isNaN(+h) ? slides.findIndex(s => s.id === h) : +h - 1;
   if (i >= 0 && i !== cur) go(i);
 });
+
+/* ---- motion ---- */
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Code blocks: one span per line, so lines can settle in one after another
+document.querySelectorAll('.code pre').forEach(pre => {
+  pre.innerHTML = pre.innerHTML.split('\n').map((l, i) => `<span class="ln" style="--i:${i}">${l}</span>`).join('');
+});
+
+// Diagram edges: a bead of light travels each connector, out of step with its neighbours
+const SVGNS = 'http://www.w3.org/2000/svg';
+const drawEdges = edges;
+edges = function(el){
+  drawEdges(el);
+  if (reduceMotion) return;
+  el.querySelectorAll('.dia svg.e').forEach(svg => {
+    svg.querySelectorAll('path').forEach((p, i) => {
+      const c = document.createElementNS(SVGNS, 'circle');
+      c.setAttribute('r', '4.5'); c.setAttribute('class', 'pk ' + (p.getAttribute('class') || ''));
+      const a = document.createElementNS(SVGNS, 'animateMotion');
+      a.setAttribute('dur', (2.8 + (i % 3) * 0.6) + 's'); a.setAttribute('repeatCount', 'indefinite');
+      a.setAttribute('begin', (-i * 0.9) + 's'); a.setAttribute('path', p.getAttribute('d'));
+      c.appendChild(a); svg.appendChild(c);
+    });
+  });
+};
+
+// Video loops: all preload (about 2.7 MB in total), only the slide in view plays
+const loops = [...document.querySelectorAll('video.loop')];
+loops.forEach(v => { v.muted = true; v.loop = true; v.playsInline = true; });
+function syncVideo(){
+  loops.forEach(v => {
+    const i = slides.indexOf(v.closest('.slide'));
+    if (reduceMotion) return;
+    if (i === cur) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+    else if (!v.paused) v.pause();
+  });
+}
+const paintSlide = paint;
+paint = function(){ paintSlide(); syncVideo(); };

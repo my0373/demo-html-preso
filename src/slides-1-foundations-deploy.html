@@ -1,6 +1,6 @@
 <!-- ============================================================ 1 TITLE -->
 <section class="slide s-title active" id="title" data-title="Title" data-topic="Intro">
-  <div class="bgimg" role="img" aria-label="A data centre aisle rendered in Blender, racks lit in teal and amber with glowing overhead cabling"></div>
+  <div class="bgimg" style="background-image:url(assets/renders/hero.jpg)" role="img" aria-label="A data centre aisle rendered in Blender, racks lit in teal and amber with glowing overhead cabling"><video class="loop" muted loop playsinline preload="auto" poster="assets/renders/hero.jpg"><source src="assets/renders/hero.mp4" type="video/mp4"></video></div>
   <div class="titlemark">netbox</div>
   <div class="eyebrow">Community NetBox<span class="sep">&middot;</span>A hands-on tour<span class="sep">&middot;</span>3 October 2026</div>
   <h1>Using NetBox, <span class="accent">from first container to real automation.</span></h1>
@@ -110,7 +110,7 @@
         <p class="note" data-in="3">From 4.7 the nested group models (regions, locations, device roles and more) are stored with PostgreSQL <code>ltree</code> rather than django-mptt. Plugin authors need to know. Everyone else just gets faster tree queries.</p>
         <div class="where">source: <a class="lk" target="_blank" href="{{D}}features/">NetBox features overview</a></div>
       </div>
-      <figure class="shot" style="background-image:url(assets/renders/datamodel.webp)" role="img" aria-label="Five glowing tiers stacked like a pyramid, from region at the bottom to device at the top"><figcaption>Region, site, location, rack, device. Each tier narrows to the thing you rack.</figcaption></figure>
+      <figure class="shot" style="background-image:url(assets/renders/datamodel.jpg)" role="img" aria-label="Five glowing tiers stacked like a pyramid, from region at the bottom to device at the top"><video class="loop" muted loop playsinline preload="auto" poster="assets/renders/datamodel.jpg"><source src="assets/renders/datamodel.mp4" type="video/mp4"></video><figcaption>Region, site, location, rack, device. Each tier narrows to the thing you rack.</figcaption></figure>
     </div>
   </div>
   {{FOOTER}}
@@ -159,7 +159,7 @@ docker compose exec netbox /opt/netbox/netbox/manage.py createsuperuser</pre></d
         <p class="note">Give it a few minutes on first start while the database migrates. Then open <code>http://localhost:8000/</code>. The override example maps host port 8000 to the container's 8080.</p>
         <p class="note">Restarting from an empty database a lot? Set the <code>SUPERUSER_*</code> variables in the override file instead of running <code>createsuperuser</code> by hand.</p>
       </div>
-      <figure class="shot" style="background-image:url(assets/renders/containers.webp)" role="img" aria-label="A glowing plinth carrying a large central block with a database cylinder, a cache cube and a worker block linked to it"><figcaption>NetBox in the middle, its database, cache and worker around it.</figcaption></figure>
+      <figure class="shot" style="background-image:url(assets/renders/containers.jpg)" role="img" aria-label="A glowing plinth carrying a large central block with a database cylinder, a cache cube and a worker block linked to it"><video class="loop" muted loop playsinline preload="auto" poster="assets/renders/containers.jpg"><source src="assets/renders/containers.mp4" type="video/mp4"></video><figcaption>NetBox in the middle, its database, cache and worker around it.</figcaption></figure>
     </div>
     <div class="where">source: <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker#quickstart">netbox-docker README, Quickstart</a> &middot; <a class="lk" target="_blank" href="https://github.com/netbox-community/netbox-docker/wiki/Getting-Started">Getting Started wiki</a></div>
   </div>
